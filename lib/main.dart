@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: CanvasExample(),
+      home: const CanvasExample(),
     );
   }
 }
