@@ -71,7 +71,11 @@ class _CanvasViewState extends State<CanvasView> {
           },
           child: Listener(
             behavior: HitTestBehavior.translucent,
-            onPointerSignal: (event) {},
+            onPointerSignal: (event) {
+              if (event is PointerScrollEvent) {
+                // TODO: Scroll event with pan / zoom
+              }
+            },
             child: MouseRegion(
               onHover: (details) {
                 widget.controller.mousePosition = details.localPosition;

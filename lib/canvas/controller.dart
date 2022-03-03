@@ -22,7 +22,7 @@ class CanvasController extends ChangeNotifier {
 
   pan(Offset delta) {
     currentOffset += delta;
-    debugPrint('pan $delta $currentOffset');
+    // debugPrint('pan $delta $currentOffset');
     matrix.translate(delta.dx / currentScale, delta.dy / currentScale);
     update();
   }
@@ -30,7 +30,7 @@ class CanvasController extends ChangeNotifier {
   scale(double delta, [Offset? focalPoint]) {
     final amount = delta > 0 ? 1.1 : 0.9;
     currentScale *= amount;
-    debugPrint('scale $delta $focalPoint $currentScale');
+    // debugPrint('scale $delta $focalPoint $currentScale');
     if (currentScale < minScale || currentScale > maxScale) {
       return;
     }
