@@ -1,14 +1,49 @@
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:html' as html;
+
 import 'controller.dart';
 import 'painter.dart';
 
-class CanvasView extends StatelessWidget {
+class CanvasView extends StatefulWidget {
   const CanvasView({Key? key, required this.controller}) : super(key: key);
 
   final CanvasController controller;
+
+  @override
+  State<CanvasView> createState() => _CanvasViewState();
+}
+
+class _CanvasViewState extends State<CanvasView> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Dom Wheel Event
+    html.document.body!.addEventListener('wheel', (e) {
+      e.preventDefault();
+      final event = e as html.WheelEvent;
+      final origin = event.offset;
+      final controller = widget.controller;
+      if (e.ctrlKey == true) {
+        double scale = 1;
+        if (event.deltaY < 0) {
+          scale = 0.1;
+        } else {
+          scale = -0.1;
+        }
+        controller.scale(
+            scale, Offset(origin.x.toDouble(), origin.y.toDouble()));
+      } else {
+        controller
+            .pan(Offset(-event.deltaX.toDouble(), -event.deltaY.toDouble()));
+      }
+    }, false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,47 +54,31 @@ class CanvasView extends StatelessWidget {
           autofocus: true,
           onKey: (node, event) {
             if (event is RawKeyDownEvent) {
-              controller.shiftPressed =
+              widget.controller.shiftPressed =
                   event.logicalKey == LogicalKeyboardKey.shiftLeft ||
                       event.logicalKey == LogicalKeyboardKey.shiftRight;
-              controller.controlPressed =
+              widget.controller.controlPressed =
                   event.logicalKey == LogicalKeyboardKey.controlLeft ||
                       event.logicalKey == LogicalKeyboardKey.controlRight;
-              controller.spaceBarPressed =
+              widget.controller.spaceBarPressed =
                   event.logicalKey == LogicalKeyboardKey.space;
             } else {
-              controller.controlPressed = false;
-              controller.spaceBarPressed = false;
-              controller.shiftPressed = false;
+              widget.controller.controlPressed = false;
+              widget.controller.spaceBarPressed = false;
+              widget.controller.shiftPressed = false;
             }
             return KeyEventResult.ignored;
           },
           child: Listener(
             behavior: HitTestBehavior.translucent,
-            onPointerSignal: (event) {
-              if (event is PointerScrollEvent) {
-                GestureBinding.instance.pointerSignalResolver.register(event,
-                    (event) {
-                  if (event is PointerScrollEvent) {
-                    // TODO: Scale and Pan at the same time
-                    if (controller.shiftPressed) {
-                      double zoomDelta = (-event.scrollDelta.dy / 300);
-                      controller.scale(zoomDelta, controller.mousePosition);
-                    } else {
-                      controller.pan(-event.scrollDelta);
-                    }
-                    controller.update();
-                  }
-                });
-              }
-            },
+            onPointerSignal: (event) {},
             child: MouseRegion(
               onHover: (details) {
-                controller.mousePosition = details.localPosition;
+                widget.controller.mousePosition = details.localPosition;
               },
               child: CustomPaint(
                 painter: CanvasPainter(
-                  controller: controller,
+                  controller: widget.controller,
                   context: context,
                 ),
               ),

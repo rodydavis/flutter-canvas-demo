@@ -10,8 +10,8 @@ class CanvasController extends ChangeNotifier {
   List<CanvasWidget> widgets;
   double minScale = 0.1;
   double maxScale = 10;
-  double _scale = 1;
-  Offset _offset = Offset.zero;
+  double currentScale = 1;
+  Offset currentOffset = Offset.zero;
   Offset mousePosition = Offset.zero;
   bool shiftPressed = false;
   bool spaceBarPressed = false;
@@ -21,22 +21,24 @@ class CanvasController extends ChangeNotifier {
   Matrix4 matrix = Matrix4.identity();
 
   pan(Offset delta) {
-    _offset += delta;
-    debugPrint('pan $delta $_offset');
-    matrix.translate(delta.dx / _scale, delta.dy / _scale);
+    currentOffset += delta;
+    debugPrint('pan $delta $currentOffset');
+    matrix.translate(delta.dx / currentScale, delta.dy / currentScale);
     update();
   }
 
   scale(double delta, [Offset? focalPoint]) {
     final amount = delta > 0 ? 1.1 : 0.9;
-    _scale *= amount;
-    debugPrint('scale $delta $focalPoint $_scale');
-    if (_scale < minScale || _scale > maxScale) {
+    currentScale *= amount;
+    debugPrint('scale $delta $focalPoint $currentScale');
+    if (currentScale < minScale || currentScale > maxScale) {
       return;
     }
     final fp = globalToLocal(focalPoint ?? mousePosition, matrix);
     if (focalPoint != null) matrix.translate(fp.dx, fp.dy);
-    matrix.scale(amount, amount);
+    matrix.setEntry(0, 0, currentScale);
+    matrix.setEntry(1, 1, currentScale);
+    // matrix.scale(amount, amount);
     if (focalPoint != null) matrix.translate(-fp.dx, -fp.dy);
     update();
   }
