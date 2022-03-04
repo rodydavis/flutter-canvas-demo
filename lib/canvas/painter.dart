@@ -35,20 +35,6 @@ class CanvasPainter extends CustomPainter {
       }
     }
 
-    // Draw mouse
-    final mouse = controller.toLocalOffset(controller.mousePosition);
-    final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-    canvas.drawCircle(
-        Offset(
-          mouse.dx - 1.5,
-          mouse.dy - 1.5,
-        ),
-        3.0,
-        paint);
-
     canvas.restore();
   }
 
