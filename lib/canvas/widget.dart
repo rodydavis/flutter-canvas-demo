@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 abstract class CanvasWidget {
-  Rect get rect;
+  Rect rect;
+
+  CanvasWidget(this.rect);
+
   void draw(Canvas canvas, Size size);
 }
 
 class InlineCanvasWidget extends CanvasWidget {
   InlineCanvasWidget({
-    required this.rect,
+    required Rect rect,
     required this.paint,
-  });
-
-  @override
-  final Rect rect;
+  }) : super(rect);
 
   final void Function(Canvas canvas, Size size) paint;
 

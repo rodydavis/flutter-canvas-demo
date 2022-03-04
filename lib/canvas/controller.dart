@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 // import 'package:matrix4_transform/matrix4_transform.dart';
 
@@ -47,6 +48,15 @@ class CanvasController extends ChangeNotifier {
     update();
   }
 
+  move(Offset delta) {
+    for (final item in widgets) {
+      if (selected.contains(item)) {
+        item.rect = item.rect.translate(delta.dx, delta.dy);
+      }
+    }
+    update();
+  }
+
   toLocalOffset(Offset point) {
     return matrix.toLocalOffset(point);
   }
@@ -54,17 +64,16 @@ class CanvasController extends ChangeNotifier {
   addPointer(int id, Offset position) {
     pointers[id] = position;
     mouseDown = true;
+    if (pointers.length == 1) {
+      final selection = select(position);
+      selected = selection.take(1).toList();
+    }
     update();
   }
 
   removePointer(int id) {
-    final oldPointers = {...pointers};
     pointers.remove(id);
     mouseDown = pointers.isNotEmpty;
-    if (oldPointers.length == 1) {
-      final position = oldPointers.values.first;
-      selected = select(position);
-    }
     update();
   }
 
@@ -147,14 +156,27 @@ class CanvasController extends ChangeNotifier {
         final newKeys = pointers.keys.toList();
         final oldPoint1 = oldPointers[oldKeys[0]]!;
         final newPoint1 = pointers[newKeys[0]]!;
+        final delta = newPoint1 - oldPoint1;
         if (spaceBarPressed) {
-          final delta = newPoint1 - oldPoint1;
           pan(delta);
+        } else {
+          move(delta);
         }
       }
     }
 
     update();
+  }
+
+  // TODO: System cursor
+  MouseCursor getCursor() {
+    SystemMouseCursor cursor = SystemMouseCursors.basic;
+    if (spaceBarPressed) {
+      cursor = SystemMouseCursors.grab;
+    } else if (hovered.isNotEmpty && hovered == selected) {
+      cursor = SystemMouseCursors.move;
+    }
+    return cursor;
   }
 
   update() {
