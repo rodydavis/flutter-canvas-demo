@@ -60,7 +60,7 @@ class CanvasView extends StatelessWidget {
             },
             child: MouseRegion(
               onHover: (details) {
-                controller.mousePosition = details.localPosition;
+                controller.updateMouse(details.localPosition, details.delta);
               },
               child: CustomPaint(
                 painter: CanvasPainter(

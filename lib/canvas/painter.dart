@@ -27,9 +27,37 @@ class CanvasPainter extends CustomPainter {
       canvas.translate(offset.dx, offset.dy);
       widget.draw(canvas, widget.rect.size);
       canvas.restore();
+
+      if (controller.selected.contains(widget)) {
+        drawOutline(canvas, widget.rect, Colors.red);
+      } else if (controller.hovered.contains(widget)) {
+        drawOutline(canvas, widget.rect, Colors.black);
+      }
     }
 
+    // Draw mouse
+    final mouse = controller.toLocalOffset(controller.mousePosition);
+    final paint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(
+        Offset(
+          mouse.dx - 1.5,
+          mouse.dy - 1.5,
+        ),
+        3.0,
+        paint);
+
     canvas.restore();
+  }
+
+  void drawOutline(Canvas canvas, Rect bounds, Color color) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    canvas.drawRect(bounds, paint);
   }
 
   void drawBackground(Canvas canvas, Rect bounds) {

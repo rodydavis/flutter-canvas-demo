@@ -10,6 +10,8 @@ class CanvasController extends ChangeNotifier {
   CanvasController({required this.widgets});
 
   List<CanvasWidget> widgets;
+  List<CanvasWidget> selected = [];
+  List<CanvasWidget> hovered = [];
   double minScale = 0.2;
   double maxScale = 10;
   double currentScale = 1;
@@ -56,8 +58,33 @@ class CanvasController extends ChangeNotifier {
   }
 
   removePointer(int id) {
+    final oldPointers = {...pointers};
     pointers.remove(id);
     mouseDown = pointers.isNotEmpty;
+    if (oldPointers.length == 1) {
+      final position = oldPointers.values.first;
+      selected = select(position);
+    }
+    update();
+  }
+
+  List<CanvasWidget> select(Offset offset) {
+    final revered = widgets.reversed.toList();
+    final point = toLocalOffset(offset);
+    final List<CanvasWidget> items = [];
+
+    for (final item in revered) {
+      if (item.rect.contains(point)) {
+        items.add(item);
+      }
+    }
+
+    return items;
+  }
+
+  updateMouse(Offset position, Offset delta) {
+    mousePosition = position;
+    hovered = select(position);
     update();
   }
 
@@ -66,14 +93,15 @@ class CanvasController extends ChangeNotifier {
     pointers[id] = position;
 
     final gestureEvent = pointers.length > 1;
+    final oldKeys = oldPointers.keys.toList();
+    final newKeys = pointers.keys.toList();
+    final oldPoint1 = oldPointers[oldKeys[0]]!;
+    final newPoint1 = pointers[newKeys[0]]!;
 
     if (gestureEvent) {
-      final oldKeys = oldPointers.keys.toList();
-      final newKeys = pointers.keys.toList();
-      final oldPoint1 = oldPointers[oldKeys[0]]!;
       final oldPoint2 = oldPointers[oldKeys[1]]!;
-      final newPoint1 = pointers[newKeys[0]]!;
       final newPoint2 = pointers[newKeys[1]]!;
+
       // 2 pointers - scale
       if (oldPointers.length == 2) {
         // Get the center of the two touches
@@ -112,6 +140,17 @@ class CanvasController extends ChangeNotifier {
         );
         final delta = newMin - oldMin;
         pan(delta);
+      }
+    } else {
+      if (mouseDown) {
+        final oldKeys = oldPointers.keys.toList();
+        final newKeys = pointers.keys.toList();
+        final oldPoint1 = oldPointers[oldKeys[0]]!;
+        final newPoint1 = pointers[newKeys[0]]!;
+        if (spaceBarPressed) {
+          final delta = newPoint1 - oldPoint1;
+          pan(delta);
+        }
       }
     }
 
