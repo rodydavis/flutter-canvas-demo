@@ -38,20 +38,25 @@ class CanvasView extends StatelessWidget {
             behavior: HitTestBehavior.translucent,
             onPointerSignal: (event) {
               if (event is PointerScrollEvent) {
-                GestureBinding.instance.pointerSignalResolver.register(event,
-                    (event) {
-                  if (event is PointerScrollEvent) {
-                    // TODO: Scale and Pan at the same time
-                    if (controller.shiftPressed) {
-                      double zoomDelta = (-event.scrollDelta.dy / 300);
-                      controller.scale(zoomDelta, controller.mousePosition);
-                    } else {
-                      controller.pan(-event.scrollDelta);
-                    }
-                    controller.update();
-                  }
-                });
+                // TODO: Scale and Pan at the same time
+                if (controller.controlPressed) {
+                  double zoomDelta = -event.scrollDelta.dy / 300;
+                  final amount = zoomDelta > 0 ? 1.1 : 0.9;
+                  controller.scale(amount, controller.mousePosition);
+                } else {
+                  controller.pan(-event.scrollDelta);
+                }
+                controller.update();
               }
+            },
+            onPointerDown: (event) {
+              controller.addPointer(event.pointer, event.position);
+            },
+            onPointerMove: (event) {
+              controller.updatePointer(event.pointer, event.position);
+            },
+            onPointerUp: (event) {
+              controller.removePointer(event.pointer);
             },
             child: MouseRegion(
               onHover: (details) {
