@@ -51,7 +51,8 @@ class CanvasController extends ChangeNotifier {
   move(Offset delta) {
     for (final item in widgets) {
       if (selected.contains(item)) {
-        item.rect = item.rect.translate(delta.dx, delta.dy);
+        item.rect = item.rect
+            .translate(delta.dx / currentScale, delta.dy / currentScale);
       }
     }
     update();
