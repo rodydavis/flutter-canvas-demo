@@ -38085,10 +38085,12 @@ s.toString
 g=s.O(0,e)
 if(f.y)f.lX(0,g)
 else f.M0(g)}f.aF()},
-qy(){var s,r
+qy(){var s,r,q
 if(this.y)s=B.Bj
 else{r=this.c
-s=r.length!==0&&B.b.gE(r)===B.b.gE(this.b)?B.Bk:B.cc}return s}}
+if(r.length!==0){q=this.b
+r=q.length!==0&&r[0]===q[0]}else r=!1
+s=r?B.Bk:B.cc}return s}}
 A.t3.prototype={
 aR(a,b){var s,r,q,p,o,n,m
 a.b2(0)
