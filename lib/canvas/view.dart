@@ -28,6 +28,7 @@ class _CanvasViewState extends State<CanvasView> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
     return SizedBox.expand(
       child: ClipRect(
         clipBehavior: Clip.antiAlias,
@@ -35,18 +36,36 @@ class _CanvasViewState extends State<CanvasView> {
           autofocus: true,
           onKey: (node, event) {
             if (event is RawKeyDownEvent) {
-              widget.controller.shiftPressed =
+              controller.shiftPressed =
                   event.logicalKey == LogicalKeyboardKey.shiftLeft ||
                       event.logicalKey == LogicalKeyboardKey.shiftRight;
-              widget.controller.controlPressed =
+              controller.controlPressed =
                   event.logicalKey == LogicalKeyboardKey.controlLeft ||
                       event.logicalKey == LogicalKeyboardKey.controlRight;
-              widget.controller.spaceBarPressed =
+              controller.spaceBarPressed =
                   event.logicalKey == LogicalKeyboardKey.space;
+
+              // Check for arrow keys
+              const double amount = 4;
+              if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                controller.pan(Offset(-amount, 0));
+              } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                controller.pan(Offset(amount, 0));
+              } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                controller.pan(Offset(0, -amount));
+              } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                controller.pan(Offset(0, amount));
+              }
+              // Check for zoom in/out
+              else if (event.logicalKey == LogicalKeyboardKey.equal) {
+                controller.scale(1.1, controller.mousePosition);
+              } else if (event.logicalKey == LogicalKeyboardKey.minus) {
+                controller.scale(0.9, controller.mousePosition);
+              }
             } else {
-              widget.controller.controlPressed = false;
-              widget.controller.spaceBarPressed = false;
-              widget.controller.shiftPressed = false;
+              controller.controlPressed = false;
+              controller.spaceBarPressed = false;
+              controller.shiftPressed = false;
             }
             return KeyEventResult.ignored;
           },
@@ -55,35 +74,33 @@ class _CanvasViewState extends State<CanvasView> {
             onPointerSignal: (event) {
               if (event is PointerScrollEvent) {
                 // TODO: Scale and Pan at the same time
-                if (widget.controller.controlPressed) {
+                if (controller.controlPressed) {
                   double zoomDelta = -event.scrollDelta.dy / 300;
                   final amount = zoomDelta > 0 ? 1.1 : 0.9;
-                  widget.controller
-                      .scale(amount, widget.controller.mousePosition);
+                  controller.scale(amount, controller.mousePosition);
                 } else {
-                  widget.controller.pan(-event.scrollDelta);
+                  controller.pan(-event.scrollDelta);
                 }
-                widget.controller.update();
+                controller.update();
               }
             },
             onPointerDown: (event) {
-              widget.controller.addPointer(event.pointer, event.position);
+              controller.addPointer(event.pointer, event.position);
             },
             onPointerMove: (event) {
-              widget.controller.updatePointer(event.pointer, event.position);
+              controller.updatePointer(event.pointer, event.position);
             },
             onPointerUp: (event) {
-              widget.controller.removePointer(event.pointer);
+              controller.removePointer(event.pointer);
             },
             child: MouseRegion(
               cursor: _cursor,
               onHover: (details) {
-                widget.controller
-                    .updateMouse(details.localPosition, details.delta);
+                controller.updateMouse(details.localPosition, details.delta);
               },
               child: CustomPaint(
                 painter: CanvasPainter(
-                  controller: widget.controller,
+                  controller: controller,
                   context: context,
                 ),
               ),
