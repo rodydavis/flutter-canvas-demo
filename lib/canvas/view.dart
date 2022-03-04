@@ -48,13 +48,13 @@ class _CanvasViewState extends State<CanvasView> {
               // Check for arrow keys
               const double amount = 4;
               if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                controller.pan(Offset(-amount, 0));
+                controller.pan(const Offset(-amount, 0));
               } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                controller.pan(Offset(amount, 0));
+                controller.pan(const Offset(amount, 0));
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                controller.pan(Offset(0, -amount));
+                controller.pan(const Offset(0, -amount));
               } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                controller.pan(Offset(0, amount));
+                controller.pan(const Offset(0, amount));
               }
               // Check for zoom in/out
               else if (event.logicalKey == LogicalKeyboardKey.equal) {
