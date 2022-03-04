@@ -168,12 +168,11 @@ class CanvasController extends ChangeNotifier {
     update();
   }
 
-  // TODO: System cursor
   MouseCursor getCursor() {
     SystemMouseCursor cursor = SystemMouseCursors.basic;
     if (spaceBarPressed) {
       cursor = SystemMouseCursors.grab;
-    } else if (hovered.isNotEmpty && hovered == selected) {
+    } else if (hovered.isNotEmpty && hovered.first == selected.first) {
       cursor = SystemMouseCursors.move;
     }
     return cursor;
