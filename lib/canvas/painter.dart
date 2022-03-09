@@ -71,7 +71,7 @@ class CanvasPainter extends CustomPainter {
     final gridPaint = Paint()
       ..color = colors.outline
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0 / scale;
+      ..strokeWidth = 0.9 * scale;
 
     for (var x = gridOffsetDx; x < bounds.width; x += gridSize) {
       canvas.drawLine(Offset(x, 0), Offset(x, bounds.height), gridPaint);
