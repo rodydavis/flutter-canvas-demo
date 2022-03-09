@@ -38099,7 +38099,7 @@ e=A.bg()
 b=j.fr
 e.sah(0,b==null?j.cx:b)
 e.sfX(0,B.bb)
-e.sil(0.9*k)
+e.sil(0.23*k)
 for(b=a2.c-a2.a,s=a2.d-a2.b,d=g;d<b;d+=h)a1.hm(0,new A.K(d,0),new A.K(d,s),e)
 for(c=f;c<s;c+=h)a1.hm(0,new A.K(0,c),new A.K(b,c),e)
 a1.aS(0)},
